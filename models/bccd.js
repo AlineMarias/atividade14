@@ -19,15 +19,17 @@ connection.connect(err => {
 function consultar(query, callback) {
   connection.query(query, (err, resultados) => {
       if (err) {
+          console.error('Erro ao consultar o banco de dados:', err);
           callback(err, null);
           return;
       }
+      console.log('Resultados da consulta:', resultados); 
       callback(null, resultados);
   });
 }
-
 
 module.exports = {
   consultar, 
   connection
 };
+
