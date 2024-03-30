@@ -8,10 +8,29 @@
     <title>Pagina Livros</title>
 </head>
 <body>
-   <h1>BUSCADOR DE LIVROS</h1>
-   <label>Titulo</label><input type="text" class="titulosLivros" name="titulo" ><input type="radio" name="campo-pesquisa" value="titulo">
-   <label>Ano</label><input type="text" class="anoLivros" name="ano" ><input type="radio" name="campo-pesquisa" value="ano">
-   <button type="button">Buscar</button>
-
+    <h1>BUSCADOR DE LIVROS</h1>
+    <div class="container">
+        <form action="/buscar" method="GET">
+            <label for="titulo">Título</label><input type="text" class="titulosLivros" name="titulo" id="titulo"><input type="radio" name="campo-pesquisa" value="titulo" id="radio-titulo">
+            <label for="ano">Ano</label><input type="text" class="anoLivros" name="ano" id="ano"><input type="radio" name="campo-pesquisa" value="ano" id="radio-ano">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+    <div class="resultado">
+        <% if (livro_encontrado) { %>
+            <h2><b>livros encontrados:</b></h2>
+            <ul>
+                <% if (Array.isArray(livro_encontrado)) { %>
+                    <% livro_encontrado.forEach(livro => { %>
+                        <li>
+                            <h3>Titulo:<%= livro.titulo %></h3>
+                            <p>Autor:<%= livro.autor %></p>
+                            <p>Ano:<%= livro.ano %></p>
+                        </li>
+                    <% }); %>
+                <% } %>
+            </ul>
+        <% } %>
+    </div>
 </body>
 </html>
