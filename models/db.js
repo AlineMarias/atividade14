@@ -1,20 +1,22 @@
-const db = require('./bccd');
+const livro = require('./db.js');
 
 class Livro {
-  constructor(titulo, autor, ano) {
-    this.titulo = titulo;
-    this.autor = autor;
-    this.ano = ano;
-  }
+    constructor(titulo, autor, ano) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.ano = ano;
+    }
 
-  cadastrarLivro() {
-    return db.execute('INSERT INTO livros (titulo, autor, ano) VALUES (?, ?, ?)', [this.titulo, this.autor, this.ano]);
-  }
+    static async getByTitulo(titulo) {
+        const [rows] = await db.execute('SELECT * FROM livros WHERE titulo = ?', [titulo]);
+        return rows;
+    }
 
-  static getAll() {
-    return db.execute('SELECT * FROM livros');
-  }
-
+    static async getByAno(ano) {
+        const [rows] = await db.execute('SELECT * FROM livros WHERE ano = ?', [ano]);
+        return rows;
+    }
 }
 
 module.exports = Livro;
+
