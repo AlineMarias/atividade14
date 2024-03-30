@@ -1,60 +1,43 @@
 const express = require('express');
 const router = express.Router();
-
-const bd_livros = require('../models/bccd.js');
+const db = require('../models/bccd.js'); 
 
 router.get('/', (req, res) => {
-      const titulo = req.query.titulo;
+    res.render('index', { livro_encontrado: [] });
+});
+
+router.get('/buscar', async (req, res) => {
+    const titulo = req.query.titulo;
     const campo_pesquisa = req.query['campo-pesquisa'];
-    let ano;
+    const ano = req.query.ano;
 
-    console.log("Campo de pesquisa: ", campo_pesquisa);
-    console.log("Titulo do livro: ", titulo);
-
-    if (campo_pesquisa === undefined) {
-        res.render('index', { livro_encontrado: null, error: 'Tipo de pesquisa inválido, Tente novamente!' });
+    if (!campo_pesquisa || (campo_pesquisa !== 'titulo' && campo_pesquisa !== 'ano')) {
+        return res.render('index', { livro_encontrado: null, error: 'Tipo de pesquisa inválido. Tente novamente!' });
     }
 
-    if (campo_pesquisa === 'titulo') {
-
-        if (titulo === '') {
-            res.render('index', { livro_encontrado: null, error: 'Bloco vazio! digite um bloco de livro válido' });
+    try {
+        let resultados;
+        if (campo_pesquisa === 'titulo') {
+            if (!titulo) {
+                return res.render('index', { livro_encontrado: null, error: 'Campo de título vazio! Digite um título válido.' });
+            }
+            resultados = await Livro.getByTitulo(titulo);
+        } else if (campo_pesquisa === 'ano') {
+            if (!ano) {
+                return res.render('index', { livro_encontrado: null, error: 'Campo de ano vazio! Digite um ano válido.' });
+            }
+            resultados = await Livro.getByAno(ano);
         }
 
-        bd_livros.consultar(`SELECT * FROM livros WHERE titulo = '${titulo}'`, (err, resultados) => {
-            if (err) {
-                console.error('Erro ao buscar livros:', err);
-                res.render('index', { livro_encontrado: null, error: 'Erro ao buscar livros.' });
-                return;
-            }
-
-            if (resultados.length > 0) {
-                res.render('index', { livro_encontrado: resultados, error: null });
-            } else {
-                res.render('index', { livro_encontrado: null, error: 'Livro não encontrado.' });
-            }
-        });
-    } else if (campo_pesquisa === 'ano') {
-        ano = req.query.ano;
-
-        if (ano === '') {
-            res.render('index', { livro_encontrado: null, error: 'Bloco vazio! digite um bloco de livro válido' });
+        if (resultados.length > 0) {
+            return res.render('index', { livro_encontrado: resultados, error: null });
+        } else {
+            return res.render('index', { livro_encontrado: null, error: 'Livro não encontrado.' });
         }
-
-        bd_livros.consultar(`SELECT * FROM livros WHERE ano = ${ano}`, (err, resultados) => {
-            if (err) {
-                console.error('Erro ao buscar livros:', err);
-                res.render('index', { livro_encontrado: null, error: 'Erro ao buscar livros.' });
-                return;
-            }
-
-            if (resultados.length > 0) {
-                res.render('index', { livro_encontrado: resultados, error: null });
-            } else {
-                res.render('index', { livro_encontrado: null, error: 'Livro não encontrado.' });
-            }
-        });
+    } catch (err) {
+        console.error('Erro ao buscar livros:', err);
+        return res.render('index', { livro_encontrado: null, error: 'Erro ao buscar livros.' });
     }
-})
+});
 
 module.exports = router;
