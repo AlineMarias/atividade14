@@ -1,4 +1,4 @@
-const livro = require('./db.js');
+const db = require('./db.js');
 
 class Livro {
     constructor(titulo, autor, ano) {
@@ -16,7 +16,11 @@ class Livro {
         const [rows] = await db.execute('SELECT * FROM livros WHERE ano = ?', [ano]);
         return rows;
     }
+
+    static async getByAutor(autor) {
+        const [rows] = await db.execute('SELECT * FROM livros WHERE autor = ?', [autor]);
+        return rows;
+    }
 }
 
 module.exports = Livro;
-
