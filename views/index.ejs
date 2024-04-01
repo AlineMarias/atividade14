@@ -8,28 +8,52 @@
     <title>Pagina Livros</title>
 </head>
 <body>
-    <h1>BUSCADOR DE LIVROS</h1>
+    <h1>BUSCAR LIVROS</h1>
     <div class="container">
         <form action="/buscar" method="GET">
             <label for="titulo">Título</label><input type="text" class="titulosLivros" name="titulo" id="titulo"><input type="radio" name="campo-pesquisa" value="titulo" id="radio-titulo">
             <label for="ano">Ano</label><input type="text" class="anoLivros" name="ano" id="ano"><input type="radio" name="campo-pesquisa" value="ano" id="radio-ano">
+            <label for="autor">Autor</label><input type="text" class="autorLivros" name="autor" id="autor"><input type="radio" name="campo-pesquisa" value="autor" id="radio-ano">
             <button type="submit">Buscar</button>
         </form>
     </div>
     <div class="resultado">
-        <% if (livro_encontrado) { %>
-            <h2><b>livros encontrados:</b></h2>
+        <% if (error) { %>
+            <div class="subzero">
+                <%= error %>
+            </div>
+        <% } else if (livro_encontrado) { %>
+            <h2><b>Livros Encontrados:</b></h2>
             <ul>
                 <% if (Array.isArray(livro_encontrado)) { %>
                     <% livro_encontrado.forEach(livro => { %>
                         <li>
-                            <h3>Titulo:<%= livro.titulo %></h3>
-                            <p>Autor:<%= livro.autor %></p>
-                            <p>Ano:<%= livro.ano %></p>
+                            <h3>Título: <%= livro.titulo %></h3>
+                            <p>Autor: <%= livro.autor %></p>
+                            <p>Ano: <%= livro.ano %></p>
                         </li>
                     <% }); %>
+                <% } else { %>
+                    <li>
+                        Título: <%= livro_encontrado.titulo %><br>
+                        Autor: <%= livro_encontrado.autor %><br>
+                        Ano: <%= livro_encontrado.ano %><br>
+                    </li>
                 <% } %>
             </ul>
+            <% if (livro_encontrado && livro_encontrado.length > 0) { %>
+                <% livro_encontrado.forEach(livro => { %>
+                <li>
+                    <h3>Título: <%= livro.titulo %></h3>
+                    <p>Autor: <%= livro.autor %></p>
+                    <p>Ano: <%= livro.ano %></p>
+                    <form action="/cadastro" method="GET">
+                        <input type="hidden" name="livro_id" value="<%= livro.id %>">
+                        <button type="submit">Alugar</button>
+                    </form>
+                </li>
+                <% }); %>
+            <% } %>
         <% } %>
     </div>
 </body>
